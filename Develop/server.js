@@ -2,7 +2,7 @@ const express = require('express')
 const mysql = require('mysql2')
 const fs = require('fs');
 const inquirer = require('inquirer');
-const { response } = require('express');
+const { title } = require('process');
 
 const db = mysql.createConnection(
     {
@@ -13,7 +13,11 @@ const db = mysql.createConnection(
     },
     console.log(`Connected to the company_db database.`)
 
-);
+); 
+
+db.connect(()=>{
+    menu()
+})
 
 let questions = [
     {
@@ -39,11 +43,15 @@ function menu() {
 
             } else if (responses.question === "add a department") {
                 addDepartment();
-            } else if (responses.question === "add an role") {
+
+            } else if (responses.question === "add a role") {
                 addRole();
+
             } else if (responses.question === "add an employee") {
                 addEmployee();
-            } else if (responses.question === "update an employee role") {
+
+            } 
+            else if (responses.question === "update an employee role") {
                 updateRole();
             }
         })
@@ -64,7 +72,7 @@ function viewRoles() {
 }
 
 function viewEmployees() {
-    db.query('SELECT * FROM emoloyee', function (err, data) {
+    db.query('SELECT * FROM employee', function (err, data) {
         console.table(data)
         menu()
     })
@@ -84,7 +92,8 @@ function addDepartment() {
         .then((response) => {
             console.log(response)
             db.query('INSERT INTO department SET ?', response, function (err, data) {
-                console.log(data)
+
+
                 menu()
             })
         }
@@ -92,6 +101,9 @@ function addDepartment() {
 }
 
 function addRole() {
+    db.query("SELECT name, id value from department", (err, data) => {
+
+
     let roleQuestion = [
         {
             type: 'input',
@@ -109,7 +121,7 @@ function addRole() {
             type: 'list',
             name: 'department_id',
             message: 'which department does the role belong to? ',
-            choices: []// how to insert departments into choices 
+            choices: data,// how to insert departments into choices 
 
 
         },
@@ -124,7 +136,9 @@ function addRole() {
             })
         }
         );
+    })
 }
+
 
 function addEmployee() {
     let employeeQuestion = [
@@ -165,36 +179,44 @@ function addEmployee() {
 }
 
 function updateRole() {
+db.query("SELECT title name, id value FROM role ", (err,data)=> {
+db.query("SELECT concat(first_name,' ', last_name) name , id value FROM employee", (err,employeedata) => {
+
+
     let updateRoleQuestion = [
         {
             type: 'list',
-            name: 'first_name','last_name',  // how to combine first name and last name 
+            name: 'manager_id', // how to combine first name and last name 
             message: 'which employee role you want to update ',
-            choices: []// how to insert first_name into choices 
+            choices: employeedata// how to insert first_name into choices 
 
 
         },
         {
             type: 'list',
-            name: 'role',  // how to combine first name and last name 
+            name: 'role_id',  // how to combine first name and last name 
             message: 'which role do you want to assign to the selected employee',
-            choices: []// how to insert list of roles
+            choices: data// how to insert list of roles
 
 
         },
     ]
-    inquirer
+    inquirer // how to update? 
         .prompt(updateRoleQuestion)
         .then((response) => {
             console.log(response)
-            db.query('INSERT INTO employee SET ?', response, function (err, data) { // how to update? still using insert into 
+            db.query('UPDATE employee SET role_id =  ? WHERE id = ?', [response.role_id, response.manager_id ], function (err, data) { 
                 console.log(data)
                 menu()
             })
         }
         );
+
+    })
+})
+
 }
 
-menu()
+// menu()
 
 // sql - no tables under the database ? 
