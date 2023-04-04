@@ -142,6 +142,8 @@ function addRole() {
 
 function addEmployee() {
     db.query("SELECT title name, id value FROM role", (err,data)=>{ 
+    db.query("SELECT concat(first_name,' ', last_name) name , id value FROM employee", (err,managerdata) => {
+
     let employeeQuestion = [
         {
             type: 'input',
@@ -161,11 +163,12 @@ function addEmployee() {
             message: 'what is the role of employee? ',
             choices: data,
         },
-        // {
-        //     type: 'list',
-        //     name: 'manager_id',
-        //     message: 'Who is the manager of the employee? ',
-        // },
+        {
+            type: 'list',
+            name: 'manager_id',
+            message: 'Who is the manager of the employee? ',
+            choices: managerdata,
+        },
     ]
     inquirer
         .prompt(employeeQuestion)
@@ -176,6 +179,7 @@ function addEmployee() {
                 menu()
             })
         })
+    })
         })
         
 }
