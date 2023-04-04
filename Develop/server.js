@@ -141,6 +141,7 @@ function addRole() {
 
 
 function addEmployee() {
+    db.query("SELECT title name, id value FROM role", (err,data)=>{ 
     let employeeQuestion = [
         {
             type: 'input',
@@ -155,27 +156,28 @@ function addEmployee() {
 
         },
         {
-            type: 'input',
+            type: 'list',
             name: 'role_id',
             message: 'what is the role of employee? ',
+            choices: data,
         },
-        {
-            type: 'Input',
-            name: 'manager_id',
-            message: 'Who is the manager of the employee? ',
-        },
+        // {
+        //     type: 'list',
+        //     name: 'manager_id',
+        //     message: 'Who is the manager of the employee? ',
+        // },
     ]
     inquirer
         .prompt(employeeQuestion)
         .then((response) => {
             console.log(response)
-            // const employee = new employee(response.employee_first, response.employee_last, response.eployee_role, response.employee_manager)
             db.query('INSERT INTO employee SET ?', response, function (err, data) {
                 console.log(data)
                 menu()
             })
-        }
-        );
+        })
+        })
+        
 }
 
 function updateRole() {
