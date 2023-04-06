@@ -72,7 +72,8 @@ function viewRoles() {
 }
 
 function viewEmployees() {
-    db.query('SELECT * FROM employee', function (err, data) {
+    db.query("SELECT role.title, employee.first_name, employee.last_name  FROM employee LEFT JOIN role ON employee.role_id = role.id", function (err, data) {
+        //sql index self reference 
         console.table(data)
         menu()
     })
@@ -121,7 +122,7 @@ function addRole() {
             type: 'list',
             name: 'department_id',
             message: 'which department does the role belong to? ',
-            choices: data,// how to insert departments into choices 
+            choices: data,
 
 
         },
@@ -142,9 +143,8 @@ function addRole() {
 
 function addEmployee() {
     db.query("SELECT title name, id value FROM role", (err,data)=>{ 
-    db.query("SELECT concat(first_name,' ', last_name) name , id value FROM employee", (err,managerdata) => {
-
-    let employeeQuestion = [
+        db.query("SELECT concat(first_name,' ', last_name) name , id value FROM employee", (err,managerdata) => {
+            let employeeQuestion = [
         {
             type: 'input',
             name: 'first_name',
@@ -192,22 +192,22 @@ db.query("SELECT concat(first_name,' ', last_name) name , id value FROM employee
     let updateRoleQuestion = [
         {
             type: 'list',
-            name: 'manager_id', // how to combine first name and last name 
+            name: 'manager_id',
             message: 'which employee role you want to update ',
-            choices: employeedata// how to insert first_name into choices 
+            choices: employeedata
 
 
         },
         {
             type: 'list',
-            name: 'role_id',  // how to combine first name and last name 
+            name: 'role_id', 
             message: 'which role do you want to assign to the selected employee',
-            choices: data// how to insert list of roles
+            choices: data
 
 
         },
     ]
-    inquirer // how to update? 
+    inquirer 
         .prompt(updateRoleQuestion)
         .then((response) => {
             console.log(response)
@@ -222,7 +222,3 @@ db.query("SELECT concat(first_name,' ', last_name) name , id value FROM employee
 })
 
 }
-
-// menu()
-
-// sql - no tables under the database ? 
