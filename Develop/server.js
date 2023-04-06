@@ -73,10 +73,13 @@ function viewRoles() {
 
 function viewEmployees() {
     db.query("SELECT role.title, employee.first_name, employee.last_name  FROM employee LEFT JOIN role ON employee.role_id = role.id", function (err, data) {
+        db.query("SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id, manager.last_name as ManagerLastName, manager.first_name as ManagerFirstName FROM employee JOIN employee manager ON employee.Managerid = manager.id", 
+        function (err, data) {
         //sql index self reference 
         console.table(data)
         menu()
     })
+})
 }
 
 function addDepartment() {
